@@ -2,7 +2,6 @@ package com.tas.icecaveLibrary.utils.bundle;
 
 import com.tas.icecaveLibrary.general.EDifficulty;
 import com.tas.icecaveLibrary.general.EDirection;
-import com.tas.icecaveLibrary.utils.IIceCaveMapConfigFile;
 import com.tas.icecaveLibrary.utils.Point;
 
 /**
@@ -15,27 +14,27 @@ public class BaseBundleMetaData implements IBundleMetaData
 	/**
 	 * Width of the board in tiles.
 	 */
-	private int mBoardWidth;
+	protected int mBoardWidth;
 	
 	/**
 	 * Height of the board in tiles.
 	 */
-	private int mBoardHeight;
+	protected int mBoardHeight;
 	
 	/**
 	 * Difficulty of the map.
 	 */
-	private EDifficulty mDifficulty;
+	protected EDifficulty mDifficulty;
 	
 	/**
 	 * The width of the board wall in tiles.
 	 */
-	private int mWallWidth;
+	protected int mWallWidth;
 	
 	/**
 	 * The starting player on the board.
 	 */
-	private Point mPlayerStart;
+	protected Point mPlayerStart;
 	
 	/**
 	 * Number of boulders in the map.
@@ -45,12 +44,12 @@ public class BaseBundleMetaData implements IBundleMetaData
 	/**
 	 * Version of the map.
 	 */
-	private String mVersion;
+	protected String mVersion;
 	
 	/**
 	 * The starting move of the player on the map.
 	 */
-	private EDirection mStartingMove;
+	protected EDirection mStartingMove;
 	
 	/**
 	 * Create a new instance of the BaseBunleMetaData object.
@@ -83,23 +82,6 @@ public class BaseBundleMetaData implements IBundleMetaData
 		mPlayerStart = new Point(playerStart);
 	}
 	
-	/**
-	 * Create a new BaseBundleMetaData instance.
-	 * @param configFile - Config file to get paramters from.
-	 */
-	public BaseBundleMetaData(IIceCaveMapConfigFile configFile)
-	{
-		mPlayerStart = new Point(configFile.getPlayerStartLocation());
-		mDifficulty = configFile.getDifficulty();
-		mStartingMove = configFile.getStartingMove();
-		mBoardHeight = configFile.getBoardHeight();
-		mBoardWidth = configFile.getBoardWidth(); 
-		mBouldersNum = configFile.getBoulderNum(); 
-		mVersion = configFile.getVersion();
-	    mWallWidth = configFile.getWallWidth();
-	}
-
-
 	@Override
 	public int getBoulderNum()
 	{
