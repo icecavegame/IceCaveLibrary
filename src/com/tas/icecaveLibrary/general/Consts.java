@@ -49,6 +49,15 @@ public class Consts
 	// Columns and rows
 	public final static int DEFAULT_TILES_BMP_COLUMNS = 8;
 	public final static int DEFAULT_TILES_BMP_ROWS = 2;
-	public static final int DEFAULT_PLAYER_BMP_ROWS = 4;
-	public static final int DEFAULT_PLAYER_BMP_COLUMNS = 3;
+	public final static  int DEFAULT_PLAYER_BMP_ROWS = 4;
+	public final static int DEFAULT_PLAYER_BMP_COLUMNS = 3;
+	
+	/***
+	 * Absolute Paths
+	 */
+	
+	// Styles
+	public final static String STYLE_ROBOTO_THIN = "fonts/Roboto-Thin.ttf";
+	public final static String STYLE_ROBOTO_BLACK = "fonts/Roboto-Black.ttf";
+	public final static String STYLE_ROBOTO_CONDESEND = "fonts/Roboto-Condesend.ttf";
 }
