@@ -9,7 +9,7 @@ public enum EDifficulty
 {
 	Easy(4),
 	Medium(17),
-	Hard(35);
+	Hard(28);
 	
 	/**
 	 * Min number of moves for the difficulty.
