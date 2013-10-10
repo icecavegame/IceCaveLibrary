@@ -49,7 +49,7 @@ public class Consts
 	// Columns and rows
 	public final static int DEFAULT_TILES_BMP_COLUMNS = 8;
 	public final static int DEFAULT_TILES_BMP_ROWS = 2;
-	public final static  int DEFAULT_PLAYER_BMP_ROWS = 4;
+	public final static int DEFAULT_PLAYER_BMP_ROWS = 4;
 	public final static int DEFAULT_PLAYER_BMP_COLUMNS = 3;
 	
 	/***
@@ -61,4 +61,11 @@ public class Consts
 	public final static String STYLE_ROBOTO_THIN = "fonts/Roboto-Thin.ttf";
 	public final static String STYLE_ROBOTO_BLACK = "fonts/Roboto-Black.ttf";
 	public final static String STYLE_ROBOTO_CONDENSED_LIGHT = "fonts/RobotoCondensed-Light.ttf";
+	
+	/**
+	 * Special keys for flags
+	 */
+	
+	// Difficulty lock
+	public final static String LOCK_HARD_DIFFICULTY = "LockHardDifficulty";
 }
