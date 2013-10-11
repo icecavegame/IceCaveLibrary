@@ -57,7 +57,7 @@ public class Consts
 	 */
 	
 	// Styles
-	public final static String STYLE_ICE_AGE = "fonts/ICE_AGE.ttf";
+	public final static String STYLE_SNOW_TOP = "fonts/SnowtopCaps.otf";
 	public final static String STYLE_ROBOTO_THIN = "fonts/Roboto-Thin.ttf";
 	public final static String STYLE_ROBOTO_BLACK = "fonts/Roboto-Black.ttf";
 	public final static String STYLE_ROBOTO_CONDENSED_LIGHT = "fonts/RobotoCondensed-Light.ttf";
