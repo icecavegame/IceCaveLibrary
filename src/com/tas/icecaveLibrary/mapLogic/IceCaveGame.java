@@ -338,6 +338,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 */
 	public void resetMoves()
 	{
+		mOverallMoves -= mCurrentStageMoves;
 		mCurrentStageMoves = 0;
 	}
 }
