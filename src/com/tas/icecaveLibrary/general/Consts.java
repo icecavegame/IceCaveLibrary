@@ -68,4 +68,11 @@ public class Consts
 	
 	// Difficulty lock
 	public final static String LOCK_HARD_DIFFICULTY = "LockHardDifficulty";
+	
+	/**
+	 * Versions
+	 */
+	
+	// Map Generator Version
+	public final static String MAP_GEN_VERSION = "1.0";
 }

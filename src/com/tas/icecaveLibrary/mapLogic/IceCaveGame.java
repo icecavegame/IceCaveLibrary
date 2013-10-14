@@ -117,9 +117,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 						mLastDirectionMoved.getOpositeDirection().getDirection().x,
 						mLastDirectionMoved.getOpositeDirection().getDirection().y);
 				if(!collisionPoint.equals(mPlayerLocation.x, mPlayerLocation.y)){
-					mOverallMoves++;
 					mCurrentStageMoves++;
 					mPlayerLocation = collisionPoint;
+					increaseOverallMovesCounter();
 				}
 				
 				return null;
@@ -138,7 +138,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				mPlayerLocation = collisionPoint;
 				
 				mCurrentStageMoves++;
-				mOverallMoves++;
+				increaseOverallMovesCounter();
 				// TODO: Add report to the GUI logic on end stage.
 				return null;
 			}
@@ -150,6 +150,13 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		mCollisionInvokers.put(FlagTile.class, new BaseCollisionInvoker<Void>(endStage));
 
 		MapLogicServiceProvider.getInstance().registerCollisionManager(this);
+	}
+	
+	private void increaseOverallMovesCounter() {
+		// Increase overall moves only if player moves exceeded minimum for current stage
+		if (mCurrentStageMoves > mStage.getMoves()) {
+			mOverallMoves++;
+		}
 	}
 
 	/**
@@ -171,6 +178,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		
 		// Start the new stage.
 		mStage.buildBoard(mapBoard);
+		
+		// Increase minimum stage moves to the overall counter
+		mOverallMoves += mStage.getMoves();
 	}
 
 	/**
@@ -229,6 +239,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				mBoulderNum,
 				EDirection.RIGHT);
 		mCurrentStageMoves = 0;
+		
+		// Increase minimum stage moves to the overall counter
+		mOverallMoves += mStage.getMoves();
 	}
 
 	/**
