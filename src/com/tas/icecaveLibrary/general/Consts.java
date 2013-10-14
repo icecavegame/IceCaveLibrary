@@ -11,6 +11,7 @@ public class Consts
 	public final static String THEME_SELECT_TAG = "themeSelect";
 	public final static String SELECT_BOARD_SIZE_SIZE = "selectBoardSize";
 	public final static String MUSIC_MUTE_FLAG = "musicMuteFlag";
+	public final static String RESET_SHARED_DATA_TAG = "ResetSharedDataTag"; 
 	
 	public final static Point DEFAULT_START_POS = new Point(1, 1);
 	
@@ -24,7 +25,7 @@ public class Consts
 	// Easy
 	public final static int DEFAULT_WALL_WIDTH = 1;
 	public final static int DEFAULT_BOULDER_RELATION = 7;
-	public final static int DEFAULT_BOARD_SIZE = 20;
+	public final static int DEFAULT_BOARD_SIZE = 14;
 	
 	/***
 	 *  Standard tile values and positioning
@@ -75,4 +76,7 @@ public class Consts
 	
 	// Map Generator Version
 	public final static String MAP_GEN_VERSION = "1.0";
+	
+	// Number of resets throughout the different versions so far
+	public final static int RESET_NUMBER = 1;
 }
