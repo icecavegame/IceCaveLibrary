@@ -16,8 +16,8 @@ import com.tas.icecaveLibrary.mapLogic.collision.BaseCollisionInvoker;
 import com.tas.icecaveLibrary.mapLogic.collision.CollisionManager;
 import com.tas.icecaveLibrary.mapLogic.collision.ICollisionable;
 import com.tas.icecaveLibrary.mapLogic.tiles.BoulderTile;
+import com.tas.icecaveLibrary.mapLogic.tiles.BreakableBoulderTile;
 import com.tas.icecaveLibrary.mapLogic.tiles.FlagTile;
-import com.tas.icecaveLibrary.mapLogic.tiles.ITile;
 import com.tas.icecaveLibrary.mapLogic.tiles.WallTile;
 import com.tas.icecaveLibrary.utils.Point;
 
@@ -83,6 +83,11 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 * Indicates weather or not the game has ended.
 	 */
 	private transient boolean mIsStageEnded;
+	
+	/**
+	 * Indicates weather or not the board has changed.
+	 */
+	private transient boolean mIsBoardChanged;
 
 	/**
 	 * Create a new instance of the IceCaveGame object.
@@ -107,7 +112,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		mPlayerLocation = new Point();
 
 		// Create invokers.
-		IFunction<Void> stopPlayer = new IFunction<Void>()
+		final IFunction<Void> wallCollision = new IFunction<Void>()
 		{
 			@Override
 			public Void invoke(Point collisionPoint)
@@ -125,10 +130,36 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				return null;
 			}
 		};
+		
+		// Create invokers.
+		IFunction<Void> boulderCollision = new IFunction<Void>()
+		{
+			@Override
+			public Void invoke(Point collisionPoint)
+			{
+				wallCollision.invoke(collisionPoint);
+				
+				return null;
+			}
+		};
+		
+		// Create invokers.
+		IFunction<Void> breakableBoulderCollision = new IFunction<Void>()
+		{
+			@Override
+			public Void invoke(Point collisionPoint)
+			{
+				Point original = new Point(collisionPoint);
+				wallCollision.invoke(collisionPoint);
+				mLastDirectionMoved = null;
+				mStage.removeTile(original);
+				mIsBoardChanged = true;
+				return null;
+			}
+		};
 
 		IFunction<Void> endStage = new IFunction<Void>()
 		{
-
 			@Override
 			public Void invoke(Point collisionPoint)
 			{
@@ -139,14 +170,14 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				
 				mCurrentStageMoves++;
 				mOverallMoves++;
-				// TODO: Add report to the GUI logic on end stage.
 				return null;
 			}
 		};
 
 		// Add invokers.
-		mCollisionInvokers.put(BoulderTile.class, new BaseCollisionInvoker<Void>(stopPlayer));
-		mCollisionInvokers.put(WallTile.class, new BaseCollisionInvoker<Void>(stopPlayer));
+		mCollisionInvokers.put(BreakableBoulderTile.class, new BaseCollisionInvoker<Void>(breakableBoulderCollision));
+		mCollisionInvokers.put(BoulderTile.class, new BaseCollisionInvoker<Void>(boulderCollision));
+		mCollisionInvokers.put(WallTile.class, new BaseCollisionInvoker<Void>(wallCollision));
 		mCollisionInvokers.put(FlagTile.class, new BaseCollisionInvoker<Void>(endStage));
 
 		MapLogicServiceProvider.getInstance().registerCollisionManager(this);
@@ -157,8 +188,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 * @throws IOException 
 	 * @throws StreamCorruptedException 
 	 * @throws ClassNotFoundException 
+	 * @throws CloneNotSupportedException 
 	 */
-	public void newStage(InputStream mapFileStream) throws StreamCorruptedException, IOException, ClassNotFoundException
+	public void newStage(InputStream mapFileStream) throws StreamCorruptedException, IOException, ClassNotFoundException, CloneNotSupportedException
 	{
 		mIsStageEnded = false;
 		mLastDirectionMoved = null;
@@ -215,8 +247,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 *            - The starting position of the player.
 	 * @param wallWidth
 	 *            - Width of the walls in tiles.
+	 * @throws CloneNotSupportedException 
 	 */
-	public void newStage(Point playerStart, int wallWidth)
+	public void newStage(Point playerStart, int wallWidth) throws CloneNotSupportedException
 	{
 		mIsStageEnded = false;
 		mLastDirectionMoved = null;
@@ -296,7 +329,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 * 
 	 * @return Board of the stage.
 	 */
-	public ITile[][] getBoard()
+	public IceCaveBoard getBoard()
 	{
 		return mStage.getBoard();
 	}
@@ -321,6 +354,14 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	public boolean getIsStageEnded()
 	{
 		return mIsStageEnded;
+	}
+	
+	@Override
+	public boolean getBoardChanged()
+	{
+		boolean result = mIsBoardChanged;
+		mIsBoardChanged = false;
+		return result;
 	}
 
 	/**

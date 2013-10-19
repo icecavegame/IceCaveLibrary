@@ -4,7 +4,7 @@
 package com.tas.icecaveLibrary.mapLogic.tiles.validators;
 
 import com.tas.icecaveLibrary.mapLogic.tiles.EmptyTile;
-import com.tas.icecaveLibrary.mapLogic.tiles.ITile;
+import com.tas.icecaveLibrary.utils.board.IBoardTile;
 
 /**
  * @author Tom
@@ -17,7 +17,7 @@ public class BoulderTileValidator extends BaseTileValidator{
 						   int 		 yLocation, 
 						   int 		 xPlayerLocation,
 						   int 	     yPlayerLocation, 
-						   ITile[][] board) {
+						   IBoardTile[][] board) {
 
 		return(
 			// Check that the location is not the player.

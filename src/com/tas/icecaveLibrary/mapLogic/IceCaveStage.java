@@ -1,20 +1,12 @@
 package com.tas.icecaveLibrary.mapLogic;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.Random;
 
 import com.tas.icecaveLibrary.general.EDifficulty;
 import com.tas.icecaveLibrary.general.EDirection;
-import com.tas.icecaveLibrary.general.GeneralServiceProvider;
 import com.tas.icecaveLibrary.mapLogic.collision.ICollisionable;
-import com.tas.icecaveLibrary.mapLogic.tiles.BoulderTile;
 import com.tas.icecaveLibrary.mapLogic.tiles.EmptyTile;
-import com.tas.icecaveLibrary.mapLogic.tiles.FlagTile;
-import com.tas.icecaveLibrary.mapLogic.tiles.IBlockingTile;
 import com.tas.icecaveLibrary.mapLogic.tiles.ITile;
-import com.tas.icecaveLibrary.mapLogic.tiles.WallTile;
-import com.tas.icecaveLibrary.mapLogic.tiles.validators.TileValidatorFactory;
 import com.tas.icecaveLibrary.utils.Point;
 
 /**
@@ -28,38 +20,22 @@ public class IceCaveStage implements Serializable
 	/**
 	 * The tiles of the current stage board.
 	 */
-	private ITile[][] mTiles;
+	private IceCaveBoard mBoard;
 	
 	/**
-	 * Number of moves for the current stage.
+	 * The tiles of the current stage board.
 	 */
-	private int mMoves;
+	private IceCaveBoard mTempBoard;
 	
 	/**
-	 * Find a location on the board to place the flag in.
-	 * 
-	 * @param colsNumber 	- Number of columns in the board.
-	 * @param rowsNumber 	- Number of rows in the board.
-	 * @param playerLoc - Location of the player.
-	 * 
-	 * @return Location to place the flag.
+	 * Reset the stage.
+	 * @throws CloneNotSupportedException 
 	 */
-	private Point createExit(int colsNumber, int rowsNumber, Point playerLoc)
-	{
-		// Get a random number
-		Random rand = GeneralServiceProvider.getInstance().getRandom();
-		
-		int flagXposition = rand.nextInt(rowsNumber - 2) + 1;
-		int flagYposition = rand.nextInt(colsNumber - 2) + 1;
-		
-		while(playerLoc.equals(flagXposition, flagYposition)){
-			flagXposition = rand.nextInt(rowsNumber - 2) + 1;
-			flagYposition = rand.nextInt(colsNumber - 2) + 1;
-		}
-			
-		return new Point(flagXposition, flagYposition);
+	public void reset() throws CloneNotSupportedException{
+		mBoard = (IceCaveBoard) mTempBoard.clone();
+		mTempBoard = (IceCaveBoard) mBoard.clone();
 	}
-
+	
 	/**
 	 * Validate a point on the board.
 	 * @param toCheck - Point to validate.
@@ -68,9 +44,9 @@ public class IceCaveStage implements Serializable
 	public boolean validatePoint(Point toCheck)
 	{
 		return ((toCheck.x > 0 			    || 
-				 toCheck.x < mTiles[0].length - 1) && 
+				 toCheck.x < mBoard.getColumnNum() - 1) && 
 				(toCheck.y > 0 				|| 
-				 toCheck.y < mTiles.length - 1));
+				 toCheck.y < mBoard.getRowsNum() - 1));
 	}
 	
 	/**
@@ -83,9 +59,8 @@ public class IceCaveStage implements Serializable
 		Point nextPoint = new Point(playerLocation);
 		nextPoint.offset(direction.getDirection().x,direction.getDirection().y);
 		
-		ICollisionable collisionable = (ICollisionable)
-													mTiles[nextPoint.y]
-														  [nextPoint.x];
+		ICollisionable collisionable = 
+				(ICollisionable)mBoard.getTile(nextPoint);
 		
 		// Call the tile that the player will meet.
 		MapLogicServiceProvider.getInstance().
@@ -100,74 +75,28 @@ public class IceCaveStage implements Serializable
 	 * @return Minimal number of moves.
 	 */
 	public int getMoves() {
-		return mMoves;
+		return mBoard.getMinMoves();
 	}
 	
 	/**
 	 * Get the board of the stage.
 	 * @return The current stage's board.
 	 */
-	public ITile[][] getBoard() {
-		return mTiles;
+	public IceCaveBoard getBoard() {
+		return mBoard;
 	}
 	
-	/**
-	 * Initialize the board.
-	 * @param colsNumber - Number of rows in board.
-	 * @param rowsNumber - Number of columns in board.
-	 * @param wallWidth - Width of the wall in tiles.
-	 */
-	private void initializeBoard(int colsNumber, int rowsNumber, int wallWidth)
-	{
-		createEmptyBoard(colsNumber, rowsNumber);
-
-		fillWithEmptyTles(colsNumber, rowsNumber, wallWidth);
-	}
-
-	/**
-	 * Fill the initialized board with empty tiles.
-	 * 
-	 * @param colsNumber - Number of rows in board.
-	 * @param rowsNumber - Number of columns in board.
-	 * @param wallWidth - Width of the wall in tiles.
-	 */
-	private void fillWithEmptyTles(int colsNumber, int rowsNumber, int wallWidth) {
-		for (int i = wallWidth; i < colsNumber - wallWidth; i++)
-		{
-			for (int j = wallWidth; j < rowsNumber - wallWidth; j++)
-			{
-				// Initializing board.
-				mTiles[i][j] = new EmptyTile(j,i);
-			}
-		}
-	}
-
-	/**
-	 * Creates an empty board, all tiles are walls.
-	 * @param colsNumber - Number of rows in board.
-	 * @param rowsNumber - Number of columns in board.
-	 */
-	private void createEmptyBoard(int colsNumber, int rowsNumber) {
-		// Initializing walls
-		for (int i = 0; i < colsNumber; i++)
-		{
-			for (int j = 0; j < rowsNumber; j++)
-			{
-				mTiles[i][j] = new WallTile(j,i);
-			}
-		}
-	}
-
 	/**
 	 * Generating a a stage from a fixed map.
 	 * 
 	 * @param board - The fixed board to initialize the stage with.
+	 * @throws CloneNotSupportedException 
 	 */
-	public void buildBoard(IceCaveBoard board)
+	public void buildBoard(IceCaveBoard board) throws CloneNotSupportedException
 	{
 		// Initialize members.
-		mTiles = board.getBoard().clone();
-		mMoves = board.getMinMoves();
+		mBoard = (IceCaveBoard) board.clone();
+		mTempBoard = (IceCaveBoard) board.clone();
 	}
 	
 	/**
@@ -180,6 +109,7 @@ public class IceCaveStage implements Serializable
 	 * @param playerLoc - Starting location for the player.
 	 * @param boulderNum - Number of boulders in the board.
 	 * @param startingMove - First move of the player to do (while building the board).
+	 * @throws CloneNotSupportedException 
 	 */
 	public void buildBoard(EDifficulty difficulty, 
 						   int 		   rowsNumber, 
@@ -187,25 +117,17 @@ public class IceCaveStage implements Serializable
 						   int 		   wallWidth, 
 						   Point 	   playerLoc, 
 						   int 	       boulderNum,
-						   EDirection  startingMove)
+						   EDirection  startingMove) throws CloneNotSupportedException
 	{
-		// Initialize members.
-		mTiles = new ITile[colsNumber][rowsNumber];
-		
-		// Place tiles in the board.
-		placeTiles(colsNumber, rowsNumber, wallWidth, playerLoc, boulderNum);			
-	
-		//printBoard(mTiles);
-		
-		// Validating the matrix path
-		// If the validate turns false
-		while (!validate(startingMove, playerLoc, difficulty)){
-
-			// Re-initializing map
-			placeTiles(colsNumber, rowsNumber, wallWidth, playerLoc, boulderNum);			
-			
-//			printBoard(mTiles);
-		}
+		mBoard = 
+				new IceCaveBoard(rowsNumber, 
+								 colsNumber, 
+								 playerLoc, 
+								 startingMove,
+								 boulderNum,
+								 wallWidth,
+								 difficulty);
+		mTempBoard = (IceCaveBoard) mBoard.clone();
 	}
 
 	/**
@@ -251,195 +173,24 @@ public class IceCaveStage implements Serializable
 
 	
 	/**
-	 * Place all tiles on the board.
-	 * 
-	 * @param colsNumber - Board row length in tiles. 
-	 * @param rowsNumber - Board column length in tiles.
-	 * @param wallWidth - Width of the wall in tiles.
-	 * @param playerLoc - Player location.
-	 * @param boulderNum - Number of boulders to place.
+	 * Get a tile from a location of the board.
+	 * @param location - Location on the board to get a tile from.
+	 * @return ITile from the requested location or null if error.
 	 */
-	private void placeTiles(int colsNumber, int rowsNumber, int wallWidth,
-			Point playerLoc, int boulderNum) {
-		// Creating the board
-		initializeBoard(colsNumber, rowsNumber, wallWidth);
-
-		// Creating exit point
-		Point flagLocation = 
-				createExit(colsNumber, rowsNumber, playerLoc);
-		
-		mTiles[flagLocation.y][flagLocation.x] = new FlagTile(flagLocation);
-
-		// Place the boulders on the board.
-		placeBoulders(colsNumber,
-					  rowsNumber, 
-					  playerLoc,
-					  boulderNum);
-	}
-
-	/**
-	 * Place boulders on the board.
-	 * @param colsNumber - Row length of the board in tiles.
-	 * @param rowsNumber - Column length of the board in tiles.
-	 * @param playerLoc - Player location.
-	 * @param boulderNum - Number of boulders to place on board.
-	 */
-	private void placeBoulders(int colsNumber,
-							   int rowsNumber,
-							   Point playerLoc,
-							   int boulderNum) {
-		Random rand = 
-				GeneralServiceProvider.getInstance().getRandom();
-		
-		int boulderColRand, boulderRowRand, boulderCounter = 0;
-		
-		// Place boulders.
-		// TODO: Might be an infinite loop.
-		int retryCounter = 0;
-		
-		// Check if we placed all boulders, 
-		// or failed placing one for ten times in a row.
-		while (retryCounter < 10 && boulderCounter < boulderNum)
-		{
-			// Making random points
-			boulderRowRand = rand.nextInt(rowsNumber - 2) + 1;
-			boulderColRand = rand.nextInt(colsNumber - 2) + 1;
-
-			// Validate the position.
-			TileValidatorFactory tileValidatorFactory =
-					MapLogicServiceProvider.getInstance().getTileValidatorFactory();
-			
-			// If the location is not valid.
-			if(!tileValidatorFactory.validate(BoulderTile.class, 
-											 boulderRowRand, 
-											 boulderColRand, 
-											 playerLoc.x, 
-											 playerLoc.y, 
-											 mTiles)){
-				retryCounter++;
-				continue;
-			}
-			
-			mTiles[boulderColRand][boulderRowRand] = 
-					new BoulderTile(boulderRowRand, boulderColRand);
-			
-			// Increase counter after creating a boulder
-			boulderCounter++; 
-		}
-	}
-
-	/**
-	 * Validate that the map is solvable in a specific number of moves.
-	 * @param defaultMoveDirection - The first direction the player moves in.
-	 * @param playerPoint - The starting location of the player.
-	 * @param difficulty - The difficulty of the stage.
-	 * @return true if valid.
-	 */
-	private boolean validate(EDirection  defaultMoveDirection,
-							 Point 	     playerPoint,
-							 EDifficulty difficulty)
+	public ITile getTile(Point location)
 	{
-		// TODO: Validate the number of steps is good.
-		// Create the root node
-		MapNode root = new MapNode(null, mTiles[playerPoint.y][playerPoint.x]);
+		return (ITile) mBoard.getTile(location);
+	}
 
-		// Clear the previous stuff
-		root.clear();
-
-		// Add the root to the stack
-		root.addRoot();
-
-		boolean[][] visited = 
-				new boolean[mTiles.length][mTiles[0].length];
-//						[EDirection.values().length];
-		
-		LinkedList<MapNode> queue = new LinkedList<MapNode>();
-		
-		// Add the root.
-		queue.add(root);
-		
-		MapNode mapNode = null;
-		MapNode flagNode = null; 
-		
-		// While the queue is not empty.
-		while(!queue.isEmpty()){
-			// Pop the node.
-			mapNode = queue.remove();
-			
-			if(mapNode.getValue() instanceof FlagTile){
-				flagNode = mapNode;
-				break;
-			}
-			
-			for (EDirection direction : EDirection.values()) {
-				Point currPoint = new Point(mapNode.getValue().getLocation());
-				getMove(direction, currPoint);
-				if(!visited[currPoint.y][currPoint.x]){
-					visited[currPoint.y][currPoint.x] = true;
-					MapNode newNode = new MapNode(mapNode, mTiles[currPoint.y][currPoint.x]);
-					// Push the node.
-					queue.add(newNode);
-					mapNode.push(newNode);
-				}
-			}
-		}
-		
-//		ArrayList<MapNode> flags = new ArrayList<MapNode>();
-//		getTheFlagNode(root, flags);
-//		
-//		MapNode flagNode = null;
-//		int lowestSteps = Integer.MAX_VALUE;
-//		for (MapNode mapNode : flags)
-//		{
-//			if(mapNode.getLevel() < lowestSteps){
-//				lowestSteps = mapNode.getLevel();				
-//				flagNode = mapNode;
-//			}
-//		}
-
-		if(flagNode == null){
-			return false;
-		}
-		
-		mMoves = flagNode.getLevel();
-		//printBoard(mTiles);
-		// Check if it's OK.
-		if (mMoves >= difficulty.getMinMoves() &&
-			mMoves <= difficulty.getMaxMoves())
-		{
-			//System.out.println("Flag level : " + flagNode.getLevel());
-			MapNode flagParent = flagNode.getParent();
-			while(flagParent != null){
-		//		System.out.println(flagParent.getValue().getLocation());
-				flagParent = flagParent.getParent();
-			}
-			return true;
-//			// Get the number of steps.
-//			m_nStepsTaken = nCurMinSteps;
-//
-//			if (nBreakableObjects == 0)
-//			{
-//				return true;
-//			}
-//			else
-//			{
-//				// Check if breakable nodes exist.
-//				int nRemoveableNum = GetBreakable();
-//
-//				// Check the number of objects.
-//				if (nRemoveableNum < nBreakableObjects)
-//				{
-//					// TODO: What to do?
-//				}
-//
-//				// Just choose the breakable object's you would like.
-//
-//				// Check if succeeded
-//				return (node.IsFlag() && node.GetLevel() >= m_nMinimumNumberOfSteps);
-//			}
-		}
-
-		return false;
+	/**
+	 * Remove the tile in the location, 
+	 * replacing it with an empty tile.
+	 * @param collisionPoint - Location on the board.
+	 * @return true if successful.
+	 */
+	public boolean removeTile(Point location)
+	{
+		return mBoard.setTile(location, new EmptyTile(location));
 	}
 
 
@@ -667,39 +418,5 @@ public class IceCaveStage implements Serializable
 //		return curNode.getValue() instanceof FlagTile;
 //	}
 
-	/**
-	 * Get the new location after making move.
-	 * @param toMove - Direction to move.
-	 * @param currPoint - The current point of the player.
-	 * @return Location of the player after making the move.
-	 */
-	private Point getMove(EDirection toMove, Point currPoint)
-	{
-		// Getting the current point
-		ITile tileCurr = 
-				mTiles[currPoint.y + toMove.getDirection().y]
-					  [currPoint.x + toMove.getDirection().x];
-
-		// While not blocked
-		while (!(tileCurr instanceof IBlockingTile))
-		{
-			currPoint.x += toMove.getDirection().x;
-			currPoint.y += toMove.getDirection().y;
-
-			// Stopping if reached exit.
-			// TODO: make this more generic.
-			if (tileCurr instanceof FlagTile)
-			{
-				break;
-			}
-
-			// Advance
-			tileCurr =
-				mTiles[currPoint.y + toMove.getDirection().y]
-					  [currPoint.x + toMove.getDirection().x];
-		}
-		
-		return (currPoint);
-	}
 }
 

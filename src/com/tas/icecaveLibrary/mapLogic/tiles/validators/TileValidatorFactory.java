@@ -3,7 +3,8 @@ package com.tas.icecaveLibrary.mapLogic.tiles.validators;
 import java.util.HashMap;
 
 import com.tas.icecaveLibrary.mapLogic.tiles.BoulderTile;
-import com.tas.icecaveLibrary.mapLogic.tiles.ITile;
+import com.tas.icecaveLibrary.mapLogic.tiles.BreakableBoulderTile;
+import com.tas.icecaveLibrary.utils.board.IBoardTile;
 
 /**
  * Factory for tile validators.
@@ -20,6 +21,7 @@ public class TileValidatorFactory {
 	 */
 	public TileValidatorFactory(){
 		mValidators.put(BoulderTile.class, new BoulderTileValidator());
+		mValidators.put(BreakableBoulderTile.class, new BoulderTileValidator());
 	}
 	
 	/**
@@ -36,8 +38,8 @@ public class TileValidatorFactory {
 							int 	  xLocation,
 							int       yLocation,
 							int		  xPlayerLocation,
-							int		  yPlayerLocation,
-							ITile[][] board){
+							int		  	   yPlayerLocation,
+							IBoardTile[][] board){
 		// Check if there is a validator.
 		if(!mValidators.containsKey(toValidate)){
 			// Not an error.

@@ -1,6 +1,6 @@
 package com.tas.icecaveLibrary.mapLogic.tiles.validators;
 
-import com.tas.icecaveLibrary.mapLogic.tiles.ITile;
+import com.tas.icecaveLibrary.utils.board.IBoardTile;
 
 /**
  * Validator for a tile.
@@ -22,5 +22,5 @@ public interface ITileValidator {
 						   int yLocation, 
 						   int xPlayerLocation, 
 						   int yPlayerLocation, 
-						   ITile[][] board);
+						   IBoardTile[][] board);
 }

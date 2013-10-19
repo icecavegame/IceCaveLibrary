@@ -20,5 +20,10 @@ public interface IIceCaveGameStatus
 	 * @return true if the game has ended.
 	 */
 	boolean getIsStageEnded();
-	
+
+	/**
+	 * Get indication to whether the board has changed.
+	 * @return true if should update the board.
+	 */
+	boolean getBoardChanged();
 }

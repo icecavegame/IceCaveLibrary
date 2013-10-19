@@ -220,7 +220,7 @@ public class MapNode implements INode<ITile>
 	@Override
 	public int getLevel()
 	{
-		final int NUMERIC_ERROR = 999;
+		final int NUMERIC_ERROR = 99999;
 
 		MapNode curNode = this;
 		int nLevelCounter = 0;

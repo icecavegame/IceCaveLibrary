@@ -23,6 +23,15 @@ public abstract class BaseTile implements ITile
 	@Override
 	public abstract ITile clone();
 	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof BaseTile){
+			BaseTile other = (BaseTile)o;
+			return mLocation.equals(other.mLocation);
+		}
+		return false;
+	};	
+	
 	/**
 	 * Create a new instance of the BaseTile object.
 	 * @param location - Location of the tile.
