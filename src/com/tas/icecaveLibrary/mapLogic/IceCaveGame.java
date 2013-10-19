@@ -169,12 +169,8 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				mPlayerLocation = collisionPoint;
 				
 				mCurrentStageMoves++;
-<<<<<<< HEAD
-				mOverallMoves++;
-=======
 				increaseOverallMovesCounter();
 				// TODO: Add report to the GUI logic on end stage.
->>>>>>> 7d5d6750d7b476c365e61efd6db13a4b48782c77
 				return null;
 			}
 		};
