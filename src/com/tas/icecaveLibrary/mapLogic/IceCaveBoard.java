@@ -1,7 +1,6 @@
 package com.tas.icecaveLibrary.mapLogic;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -360,18 +359,19 @@ public class IceCaveBoard extends BaseBoard implements Serializable
 				
 				// Find the shortest way to get 
 				// around the boulder and hit the same place again.
-				MapNode wayToBoulder =
-					findShortestRoad(curNode.getValue().getLocation(), 
-									 curNode.getValue().getLocation());
-				
-				if(wayToBoulder == null){
-					continue;
-				}
+//				MapNode wayToBoulder =
+//					findShortestRoad(curNode.getValue().getLocation(), 
+//									 curNode.getValue().getLocation());
+//				
+//				if(wayToBoulder == null){
+//					continue;
+//				}
 
+				stepsToAdd++;
 				tempBoulders.remove(curNode.getValue());
 				
-				stepsToAdd += wayToBoulder.getLevel();
-				stepsToAdd += getLevel(wayToBoulder,tempBoulders);
+//				stepsToAdd += wayToBoulder.getLevel();
+//				stepsToAdd += getLevel(wayToBoulder,tempBoulders);
 				
 				// Remove the boulder.
 				setTile(curNode.getValue().getLocation(), 
