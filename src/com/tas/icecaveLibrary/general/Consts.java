@@ -11,6 +11,7 @@ public class Consts
 	public final static String THEME_SELECT_TAG = "themeSelect";
 	public final static String SELECT_BOARD_SIZE_SIZE = "selectBoardSize";
 	public final static String MUSIC_MUTE_FLAG = "musicMuteFlag";
+	public final static String RESET_SHARED_DATA_TAG = "ResetSharedDataTag"; 
 	
 	public final static Point DEFAULT_START_POS = new Point(1, 1);
 	
@@ -68,4 +69,14 @@ public class Consts
 	
 	// Difficulty lock
 	public final static String LOCK_HARD_DIFFICULTY = "LockHardDifficulty";
+	
+	/**
+	 * Versions
+	 */
+	
+	// Map Generator Version
+	public final static String MAP_GEN_VERSION = "1.0";
+	
+	// Number of resets throughout the different versions so far
+	public final static int RESET_NUMBER = 1;
 }

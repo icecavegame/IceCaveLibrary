@@ -122,9 +122,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 						mLastDirectionMoved.getOpositeDirection().getDirection().x,
 						mLastDirectionMoved.getOpositeDirection().getDirection().y);
 				if(!collisionPoint.equals(mPlayerLocation.x, mPlayerLocation.y)){
-					mOverallMoves++;
 					mCurrentStageMoves++;
 					mPlayerLocation = collisionPoint;
+					increaseOverallMovesCounter();
 				}
 				
 				return null;
@@ -169,7 +169,12 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				mPlayerLocation = collisionPoint;
 				
 				mCurrentStageMoves++;
+<<<<<<< HEAD
 				mOverallMoves++;
+=======
+				increaseOverallMovesCounter();
+				// TODO: Add report to the GUI logic on end stage.
+>>>>>>> 7d5d6750d7b476c365e61efd6db13a4b48782c77
 				return null;
 			}
 		};
@@ -181,6 +186,13 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		mCollisionInvokers.put(FlagTile.class, new BaseCollisionInvoker<Void>(endStage));
 
 		MapLogicServiceProvider.getInstance().registerCollisionManager(this);
+	}
+	
+	private void increaseOverallMovesCounter() {
+		// Increase overall moves only if player moves exceeded minimum for current stage
+		if (mCurrentStageMoves > mStage.getMoves()) {
+			mOverallMoves++;
+		}
 	}
 
 	/**
@@ -203,6 +215,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		
 		// Start the new stage.
 		mStage.buildBoard(mapBoard);
+		
+		// Increase minimum stage moves to the overall counter
+		mOverallMoves += mStage.getMoves();
 	}
 
 	/**
@@ -262,6 +277,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				mBoulderNum,
 				EDirection.RIGHT);
 		mCurrentStageMoves = 0;
+		
+		// Increase minimum stage moves to the overall counter
+		mOverallMoves += mStage.getMoves();
 	}
 
 	/**
@@ -379,6 +397,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 */
 	public void resetMoves()
 	{
+		mOverallMoves -= mCurrentStageMoves;
 		mCurrentStageMoves = 0;
 	}
 }
