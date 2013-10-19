@@ -378,7 +378,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		@SuppressWarnings("unchecked")
 		ArrayList<Point> result = (ArrayList<Point>) mPointsChanged.clone();
 		mPointsChanged.clear();
-		return (Point[]) result.toArray();
+		return (Point[]) result.toArray(new Point[result.size()]);
 	}
 
 	/**
@@ -398,5 +398,13 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	{
 		mOverallMoves -= mCurrentStageMoves;
 		mCurrentStageMoves = 0;
+	}
+	
+	/**
+	 * Reset the stage.
+	 * @throws CloneNotSupportedException 
+	 */
+	public void resetStage() throws CloneNotSupportedException {
+		mStage.reset();
 	}
 }
