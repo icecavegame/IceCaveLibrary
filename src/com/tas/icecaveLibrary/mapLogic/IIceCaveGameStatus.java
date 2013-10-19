@@ -22,8 +22,8 @@ public interface IIceCaveGameStatus
 	boolean getIsStageEnded();
 
 	/**
-	 * Get indication to whether the board has changed.
-	 * @return true if should update the board.
+	 * Get array of points to update on the board.
+	 * @return Array of points.
 	 */
-	boolean getBoardChanged();
+	Point[] getPointToUpdate();
 }

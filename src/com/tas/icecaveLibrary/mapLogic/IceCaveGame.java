@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.io.StreamCorruptedException;
+import java.util.ArrayList;
 
 import com.tas.icecaveLibrary.general.EDifficulty;
 import com.tas.icecaveLibrary.general.EDirection;
@@ -87,7 +88,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	/**
 	 * Indicates weather or not the board has changed.
 	 */
-	private transient boolean mIsBoardChanged;
+	private transient ArrayList<Point> mPointsChanged;
 
 	/**
 	 * Create a new instance of the IceCaveGame object.
@@ -103,6 +104,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 */
 	public IceCaveGame(int boulderNum, int boardSizeX, int boardSizeY, EDifficulty difficulty)
 	{
+		mPointsChanged = new ArrayList<Point>();
 		mBoulderNum = boulderNum;
 		mBoardSizeX = boardSizeX;
 		mBoardSizeY = boardSizeY;
@@ -153,7 +155,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				wallCollision.invoke(collisionPoint);
 				mLastDirectionMoved = null;
 				mStage.removeTile(original);
-				mIsBoardChanged = true;
+				mPointsChanged.add(original);
 				return null;
 			}
 		};
@@ -371,11 +373,12 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	}
 	
 	@Override
-	public boolean getBoardChanged()
+	public Point[] getPointToUpdate()
 	{
-		boolean result = mIsBoardChanged;
-		mIsBoardChanged = false;
-		return result;
+		@SuppressWarnings("unchecked")
+		ArrayList<Point> result = (ArrayList<Point>) mPointsChanged.clone();
+		mPointsChanged.clear();
+		return (Point[]) result.toArray();
 	}
 
 	/**
