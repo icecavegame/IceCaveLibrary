@@ -1,10 +1,5 @@
 package com.tas.icecaveLibrary.mapLogic;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Random;
-
 import com.tas.icecaveLibrary.general.EDifficulty;
 import com.tas.icecaveLibrary.general.EDirection;
 import com.tas.icecaveLibrary.general.GeneralServiceProvider;
@@ -19,6 +14,10 @@ import com.tas.icecaveLibrary.mapLogic.tiles.validators.TileValidatorFactory;
 import com.tas.icecaveLibrary.utils.Point;
 import com.tas.icecaveLibrary.utils.board.BaseBoard;
 import com.tas.icecaveLibrary.utils.board.IBoardTile;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Random;
 
 @SuppressWarnings("serial")
 public class IceCaveBoard extends BaseBoard implements Serializable
@@ -270,6 +269,13 @@ public class IceCaveBoard extends BaseBoard implements Serializable
 	protected IceCaveBoard(IceCaveBoard other)
 	{
 		mBoard = new ITile[other.getRowsNum()][other.getColumnNum()];
+		
+		for (int i = 0; i < other.getRowsNum(); i++) {
+			for (int j = 0; j < other.getColumnNum(); j++) {
+				mBoard[i][j] = other.mBoard[i][j];
+			}
+		}
+		
 		mMoves = other.getMinMoves();
 		mBoulders = (ArrayList<ITile>) other.mBoulders.clone();
 		mBreakableBoulder = (ArrayList<ITile>) other.mBreakableBoulder.clone();
@@ -359,19 +365,18 @@ public class IceCaveBoard extends BaseBoard implements Serializable
 				
 				// Find the shortest way to get 
 				// around the boulder and hit the same place again.
-//				MapNode wayToBoulder =
-//					findShortestRoad(curNode.getValue().getLocation(), 
-//									 curNode.getValue().getLocation());
-//				
-//				if(wayToBoulder == null){
-//					continue;
-//				}
+				MapNode wayToBoulder =
+					findShortestRoad(curNode.getValue().getLocation(), 
+									 curNode.getValue().getLocation());
+				
+				if(wayToBoulder == null){
+					continue;
+				}
 
-				stepsToAdd++;
 				tempBoulders.remove(curNode.getValue());
 				
-//				stepsToAdd += wayToBoulder.getLevel();
-//				stepsToAdd += getLevel(wayToBoulder,tempBoulders);
+				stepsToAdd += wayToBoulder.getLevel();
+				stepsToAdd += getLevel(wayToBoulder,tempBoulders);
 				
 				// Remove the boulder.
 				setTile(curNode.getValue().getLocation(), 

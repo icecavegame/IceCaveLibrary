@@ -1,6 +1,5 @@
 package com.tas.icecaveLibrary.mapLogic;
 
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +23,9 @@ import com.tas.icecaveLibrary.utils.Point;
 
 /**
  * Class to hold all the logic of the game.
+ * 
  * @author Tom
- *
+ * 
  */
 @SuppressWarnings("serial")
 public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus, Serializable
@@ -34,57 +34,57 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 * The overall moves for the current game.
 	 */
 	private int mOverallMoves;
-	
+
 	/**
-	 * The number of moves for the current stage. 
+	 * The number of moves for the current stage.
 	 */
 	private int mCurrentStageMoves;
-	
+
 	/**
 	 * The last direction moved.
 	 */
 	private EDirection mLastDirectionMoved;
-	
+
 	/**
 	 * The current stage.
 	 */
 	private IceCaveStage mStage;
-	
+
 	/**
 	 * The current player location.
 	 */
 	private Point mPlayerLocation;
-	
+
 	/**
 	 * Is the player moving.
 	 */
 	private transient boolean mPlayerMoving;
-	
+
 	/**
 	 * Number of boulders for the current game.
 	 */
 	private int mBoulderNum;
-	
+
 	/**
 	 * The X Board size for the current game.
 	 */
 	private int mBoardSizeX;
-	
+
 	/**
 	 * The X Board size for the current game.
 	 */
 	private int mBoardSizeY;
-	
+
 	/**
 	 * The Difficulty for the current game.
 	 */
 	private EDifficulty mDifficulty;
-	
+
 	/**
 	 * Indicates weather or not the game has ended.
 	 */
 	private transient boolean mIsStageEnded;
-	
+
 	/**
 	 * Indicates weather or not the board has changed.
 	 */
@@ -120,19 +120,19 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 			public Void invoke(Point collisionPoint)
 			{
 				mPlayerMoving = false;
-				collisionPoint.offset(
-						mLastDirectionMoved.getOpositeDirection().getDirection().x,
+				collisionPoint.offset(mLastDirectionMoved.getOpositeDirection().getDirection().x,
 						mLastDirectionMoved.getOpositeDirection().getDirection().y);
-				if(!collisionPoint.equals(mPlayerLocation.x, mPlayerLocation.y)){
+				if (!collisionPoint.equals(mPlayerLocation.x, mPlayerLocation.y))
+				{
 					mCurrentStageMoves++;
 					mPlayerLocation = collisionPoint;
 					increaseOverallMovesCounter();
 				}
-				
+
 				return null;
 			}
 		};
-		
+
 		// Create invokers.
 		IFunction<Void> boulderCollision = new IFunction<Void>()
 		{
@@ -140,11 +140,11 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 			public Void invoke(Point collisionPoint)
 			{
 				wallCollision.invoke(collisionPoint);
-				
+
 				return null;
 			}
 		};
-		
+
 		// Create invokers.
 		IFunction<Void> breakableBoulderCollision = new IFunction<Void>()
 		{
@@ -152,10 +152,20 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 			public Void invoke(Point collisionPoint)
 			{
 				Point original = new Point(collisionPoint);
-				wallCollision.invoke(collisionPoint);
+				mPlayerMoving = false;
+				collisionPoint.offset(mLastDirectionMoved.getOpositeDirection().getDirection().x,
+						mLastDirectionMoved.getOpositeDirection().getDirection().y);
+				if (!collisionPoint.equals(mPlayerLocation.x, mPlayerLocation.y))
+				{
+					mPlayerLocation = collisionPoint;
+				}
 				mLastDirectionMoved = null;
 				mStage.removeTile(original);
 				mPointsChanged.add(original);
+				
+				// Always increase, even if player stands in same position
+				mCurrentStageMoves++;
+				increaseOverallMovesCounter();
 				return null;
 			}
 		};
@@ -167,9 +177,9 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 			{
 				mPlayerMoving = false;
 				mIsStageEnded = true;
-				
+
 				mPlayerLocation = collisionPoint;
-				
+
 				mCurrentStageMoves++;
 				increaseOverallMovesCounter();
 				// TODO: Add report to the GUI logic on end stage.
@@ -178,42 +188,49 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		};
 
 		// Add invokers.
-		mCollisionInvokers.put(BreakableBoulderTile.class, new BaseCollisionInvoker<Void>(breakableBoulderCollision));
+		mCollisionInvokers.put(BreakableBoulderTile.class,
+				new BaseCollisionInvoker<Void>(breakableBoulderCollision));
 		mCollisionInvokers.put(BoulderTile.class, new BaseCollisionInvoker<Void>(boulderCollision));
 		mCollisionInvokers.put(WallTile.class, new BaseCollisionInvoker<Void>(wallCollision));
 		mCollisionInvokers.put(FlagTile.class, new BaseCollisionInvoker<Void>(endStage));
 
 		MapLogicServiceProvider.getInstance().registerCollisionManager(this);
 	}
-	
-	private void increaseOverallMovesCounter() {
+
+	private void increaseOverallMovesCounter()
+	{
 		// Increase overall moves only if player moves exceeded minimum for current stage
-		if (mCurrentStageMoves > mStage.getMoves()) {
+		if (mCurrentStageMoves > mStage.getMoves())
+		{
 			mOverallMoves++;
 		}
 	}
 
 	/**
 	 * Start a new stage.
-	 * @throws IOException 
-	 * @throws StreamCorruptedException 
-	 * @throws ClassNotFoundException 
-	 * @throws CloneNotSupportedException 
+	 * 
+	 * @throws IOException
+	 * @throws StreamCorruptedException
+	 * @throws ClassNotFoundException
+	 * @throws CloneNotSupportedException
 	 */
-	public void newStage(InputStream mapFileStream) throws StreamCorruptedException, IOException, ClassNotFoundException, CloneNotSupportedException
+	public void newStage(InputStream mapFileStream) throws StreamCorruptedException,
+			IOException,
+			ClassNotFoundException,
+			CloneNotSupportedException
 	{
 		mIsStageEnded = false;
 		mLastDirectionMoved = null;
-		
+
 		// Read the map board.
 		IceCaveBoard mapBoard = readMapBoard(mapFileStream);
-		
+
 		mPlayerLocation = new Point(mapBoard.getStartPoint());
 		mCurrentStageMoves = 0;
-		
+
 		// Start the new stage.
 		mStage.buildBoard(mapBoard);
-		
+
 		// Increase minimum stage moves to the overall counter
 		mOverallMoves += mStage.getMoves();
 	}
@@ -221,7 +238,8 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	/**
 	 * Read the map board from a file.
 	 * 
-	 * @param mapFileStream - File to read the map board from.
+	 * @param mapFileStream
+	 *            - File to read the map board from.
 	 * @return
 	 * @throws FileNotFoundException
 	 * @throws StreamCorruptedException
@@ -229,30 +247,31 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 * @throws OptionalDataException
 	 * @throws ClassNotFoundException
 	 */
-	private IceCaveBoard readMapBoard(InputStream mapFileStream)
-			throws FileNotFoundException, StreamCorruptedException,
-			IOException, OptionalDataException, ClassNotFoundException
+	private IceCaveBoard readMapBoard(InputStream mapFileStream) throws FileNotFoundException,
+			StreamCorruptedException,
+			IOException,
+			OptionalDataException,
+			ClassNotFoundException
 	{
 		IceCaveBoard mapBoard;
 		ObjectInputStream objectInputStream = null;
-		
+
 		try
 		{
 			objectInputStream = new ObjectInputStream(mapFileStream);
 			mapBoard = (IceCaveBoard) objectInputStream.readObject();
-		}
-		finally
+		} finally
 		{
 			// Close the stream.
-			if(objectInputStream != null)
+			if (objectInputStream != null)
 			{
 				objectInputStream.close();
 			}
 		}
-		
+
 		return mapBoard;
 	}
-	
+
 	/**
 	 * Start a new stage.
 	 * 
@@ -260,7 +279,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	 *            - The starting position of the player.
 	 * @param wallWidth
 	 *            - Width of the walls in tiles.
-	 * @throws CloneNotSupportedException 
+	 * @throws CloneNotSupportedException
 	 */
 	public void newStage(Point playerStart, int wallWidth) throws CloneNotSupportedException
 	{
@@ -275,7 +294,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 				mBoulderNum,
 				EDirection.RIGHT);
 		mCurrentStageMoves = 0;
-		
+
 		// Increase minimum stage moves to the overall counter
 		mOverallMoves += mStage.getMoves();
 	}
@@ -304,7 +323,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		{
 			// Set last move
 			mLastDirectionMoved = direction;
-			
+
 			// Start moving.
 			mPlayerMoving = true;
 
@@ -329,7 +348,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	{
 		return mOverallMoves;
 	}
-	
+
 	/**
 	 * Return number of moves taken in the current stage.
 	 * 
@@ -355,8 +374,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	{
 		if (mCollisionInvokers.containsKey(collisionable.getClass()))
 		{
-			mCollisionInvokers.get(collisionable.getClass()).
-								   onCollision(collisionable.getLocation());
+			mCollisionInvokers.get(collisionable.getClass()).onCollision(collisionable.getLocation());
 		}
 	}
 
@@ -371,7 +389,7 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 	{
 		return mIsStageEnded;
 	}
-	
+
 	@Override
 	public Point[] getPointToUpdate()
 	{
@@ -383,14 +401,16 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 
 	/**
 	 * Resets the player location.
-	 * @param startLoc - Starting position of the player to reset to.
+	 * 
+	 * @param startLoc
+	 *            - Starting position of the player to reset to.
 	 */
 	public void resetPlayer(Point startLoc)
 	{
 		mPlayerLocation = new Point(startLoc);
 		mLastDirectionMoved = null;
 	}
-	
+
 	/**
 	 * Resets the move counter
 	 */
@@ -399,12 +419,14 @@ public class IceCaveGame extends CollisionManager implements IIceCaveGameStatus,
 		mOverallMoves -= mCurrentStageMoves;
 		mCurrentStageMoves = 0;
 	}
-	
+
 	/**
 	 * Reset the stage.
-	 * @throws CloneNotSupportedException 
+	 * 
+	 * @throws CloneNotSupportedException
 	 */
-	public void resetStage() throws CloneNotSupportedException {
+	public void resetStage() throws CloneNotSupportedException
+	{
 		mStage.reset();
 	}
 }

@@ -127,7 +127,7 @@ public class IceCaveStage implements Serializable
 								 boulderNum,
 								 wallWidth,
 								 difficulty);
-		mTempBoard = (IceCaveBoard) mBoard.clone(); // TODO Does not clone the bitmaps though. Must find a solution cause they all be null nigga
+		mTempBoard = (IceCaveBoard) mBoard.clone();
 	}
 
 	/**
